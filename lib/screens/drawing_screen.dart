@@ -1,3 +1,4 @@
+import 'package:behavioral_data_collection/screens/card_swipe_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/drawing_canvas.dart';
 import '../widgets/custom_button.dart';
@@ -72,17 +73,17 @@ class DrawingScreenState extends State<DrawingScreen> {
                       const SizedBox(width: 16.0),
                       GestureDetector(
                         onTap: () => setState(() => _selectedColor = Colors.black),
-                        child: _buildColorCircle(Colors.black),
+                        child: _buildColorCircle(Colors.black, _selectedColor == Colors.black),
                       ),
                       const SizedBox(width: 8.0),
                       GestureDetector(
                         onTap: () => setState(() => _selectedColor = Colors.red),
-                        child: _buildColorCircle(Colors.red),
+                        child: _buildColorCircle(Colors.red, _selectedColor == Colors.red),
                       ),
                       const SizedBox(width: 8.0),
                       GestureDetector(
                         onTap: () => setState(() => _selectedColor = const Color(0xFF1700A2)),
-                        child: _buildColorCircle(const Color(0xFF1700A2)),
+                        child: _buildColorCircle(const Color(0xFF1700A2), _selectedColor == const Color(0xFF1700A2)),
                       ),
                       const Spacer(),
                       _buildToolButton(
@@ -109,7 +110,8 @@ class DrawingScreenState extends State<DrawingScreen> {
                     text: "Continue",
                     onPressed: () {
                       if (!_isCanvasBlank) {
-                        // Navigate to the next screen
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const CardSwipeScreen()));
                       }
                     },
                     bgColor: _isCanvasBlank ? AppColors.lightGray : AppColors.primary,
@@ -125,13 +127,24 @@ class DrawingScreenState extends State<DrawingScreen> {
     );
   }
 
-  Widget _buildColorCircle(Color color) {
+  // Updated to highlight selected color with a shadow
+  Widget _buildColorCircle(Color color, bool isSelected) {
     return Container(
       width: 36,
       height: 36,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
+        boxShadow: isSelected
+            ? [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 0), // changes position of shadow
+          ),
+        ]
+            : [],
       ),
     );
   }

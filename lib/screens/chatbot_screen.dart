@@ -15,7 +15,6 @@ class ChatbotScreenState extends State<ChatbotScreen> {
   final List<ChatBubble> _messages = [];
   int _currentStep = 0;
   String? _userName;
-  String? _gender;
 
   @override
   void initState() {
@@ -212,6 +211,7 @@ class ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   void _startGame() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LockPatternScreen()));
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const LockPatternScreen()));
   }
 }
