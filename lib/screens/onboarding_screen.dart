@@ -1,4 +1,5 @@
 import 'package:behavioral_data_collection/screens/chatbot_screen.dart';
+import 'package:behavioral_data_collection/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../theme/colors.dart';
@@ -81,28 +82,16 @@ class OnboardingScreenState extends State<OnboardingScreen> {
             const SizedBox(height: 32.0),
 
             // Get Started Button
-            ElevatedButton(
+            CustomButton(
+              text: 'Get Started!',
+              bgColor: AppColors.primary,
+              textColor: AppColors.onPrimary,
               onPressed: () async {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ChatbotScreen())
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChatbotScreen())
                 );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary, // Primary color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0), // Rounded corners
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 12.0),
-              ),
-              child: const Text(
-                'Get Started!',
-                style: TextStyle(
-                  color: Colors.white, // On primary color
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
+            }),
           ],
         ),
       ),

@@ -1,4 +1,6 @@
+import 'package:behavioral_data_collection/screens/drawing_screen.dart';
 import 'package:behavioral_data_collection/theme/colors.dart';
+import 'package:behavioral_data_collection/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import '../widgets/pattern_widget.dart'; // Import the custom lock pattern widget
 
@@ -31,10 +33,10 @@ class LockPatternScreenState extends State<LockPatternScreen> {
   void _continue() {
     if (_isPatternMade) {
       // Navigate to the drawing activity
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const TypingTestScreen())
-      // );
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const DrawingScreen())
+      );
     }
   }
 
@@ -59,6 +61,7 @@ class LockPatternScreenState extends State<LockPatternScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
+                fontSize: 20.0,
               ),
               textAlign: TextAlign.center,
             ),
@@ -95,20 +98,12 @@ class LockPatternScreenState extends State<LockPatternScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ElevatedButton(
-                  onPressed: _continue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0), // Rounded corners
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 12.0),
-                  ),
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(color: Colors.white), // Set text color explicitly
-                  ),
-                ),
+                child: CustomButton(
+                    text: 'Continue',
+                    bgColor: _isPatternValid ? AppColors.primary : AppColors.lightGray,
+                    textColor: _isPatternValid ? AppColors.onPrimary : AppColors.black,
+                    onPressed: _continue
+                )
               ),
             ],
           ],
