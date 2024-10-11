@@ -1,4 +1,4 @@
-import 'package:behavioral_data_collection/screens/card_swipe_screen.dart';
+import 'package:behavioral_data_collection/screens/typing_test_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/drawing_canvas.dart';
 import '../widgets/custom_button.dart';
@@ -111,7 +111,7 @@ class DrawingScreenState extends State<DrawingScreen> {
                     onPressed: () {
                       if (!_isCanvasBlank) {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const CardSwipeScreen()));
+                            MaterialPageRoute(builder: (context) => const TypingTestScreen()));
                       }
                     },
                     bgColor: _isCanvasBlank ? AppColors.lightGray : AppColors.primary,

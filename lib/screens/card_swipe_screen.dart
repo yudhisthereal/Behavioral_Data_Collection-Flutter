@@ -160,11 +160,12 @@
 
         // Start the animation
         _controller.forward().then((_) {
-          // Reset the card position after the animation is complete
-          Future.delayed(const Duration(milliseconds: 3000), () {
+          // Use Future.delayed to reset the card's position after 3 seconds
+          Future.delayed(const Duration(seconds: 3), () {
             setState(() {
-              cardOffsetX = 0.0; // Reset X offset
-              cardOffsetY = 0.0; // Reset Y offset
+              // Reset card position after the delay
+              cardOffsetX = 0.0;
+              cardOffsetY = 0.0;
             });
           });
 
@@ -175,6 +176,7 @@
           _controller.reset();
         });
       }
+
 
 
       void _rotateArrow() {

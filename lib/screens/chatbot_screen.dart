@@ -47,8 +47,7 @@ class ChatbotScreenState extends State<ChatbotScreen> {
           if (_currentStep == 2) _buildHandednessOptions(),
           if (_currentStep != 1 && _currentStep != 2 && _currentStep < 4)
             _buildUserInput(),
-          if (_currentStep >= 4)
-            _buildStartButton()
+          if (_currentStep >= 4) _buildStartButton()
         ],
       ),
     );
@@ -57,17 +56,37 @@ class ChatbotScreenState extends State<ChatbotScreen> {
   void _showStartPopup() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Start the Session'),
-          content: const Text('Press Start to begin the session.'),
+          title: const Text(
+            'Start the Session',
+            style: TextStyle(color: AppColors.primary), // Set title color,.
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'Press Start to begin the session.',
+            textAlign: TextAlign.center,
+          ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _sendChat("Hi, my name is Abot. What is your name?");
-              },
-              child: const Text('Start'),
+            Center(
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _sendChat("Hi, my name is Abot. What is your name?");
+                },
+                style: OutlinedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  side: const BorderSide(color: Colors.black),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text(
+                    'Start',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
             ),
           ],
         );
@@ -94,8 +113,8 @@ class ChatbotScreenState extends State<ChatbotScreen> {
           ),
           IconButton(
             onPressed: () {
-                _sendMessage(_controller.text);
-              },
+              _sendMessage(_controller.text);
+            },
             icon: const Icon(Icons.send_outlined, color: Colors.black),
           ),
         ],
@@ -106,16 +125,19 @@ class ChatbotScreenState extends State<ChatbotScreen> {
   Widget _buildStartButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: ElevatedButton(
+      child: OutlinedButton(
         onPressed: () {
           _startGame();
         },
-        style: ElevatedButton.styleFrom(
+        style: OutlinedButton.styleFrom(
           shape: const CircleBorder(),
-          padding: const EdgeInsets.all(20),
           side: const BorderSide(color: Colors.black),
+          padding: const EdgeInsets.all(20),
         ),
-        child: const Text("Start"),
+        child: const Text(
+          "Start",
+          style: TextStyle(color: Colors.black),
+        ),
       ),
     );
   }
