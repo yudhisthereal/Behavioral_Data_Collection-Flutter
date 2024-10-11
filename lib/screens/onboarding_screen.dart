@@ -64,7 +64,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
               'Abot is a chatbot who will guide you through the session. Let\'s play with Abot!',
               style: TextStyle(
                 fontSize: 16.0,
-                color: AppColors.lightGray,
+                color: AppColors.darkGray,
               ),
               textAlign: TextAlign.center,
             ),
