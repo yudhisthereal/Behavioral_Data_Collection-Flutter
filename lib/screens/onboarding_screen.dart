@@ -1,4 +1,4 @@
-import 'package:behavioral_data_collection/screens/chatbot_screen.dart';
+import 'package:behavioral_data_collection/screens/drawing_screen.dart';
 import 'package:behavioral_data_collection/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -83,15 +83,15 @@ class OnboardingScreenState extends State<OnboardingScreen> {
 
             // Get Started Button
             CustomButton(
-              text: 'Get Started!',
-              bgColor: AppColors.primary,
-              textColor: AppColors.onPrimary,
-              onPressed: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ChatbotScreen())
-                );
-            }),
+                text: 'Get Started!',
+                bgColor: AppColors.primary,
+                textColor: AppColors.onPrimary,
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const DrawingScreen())
+                  );
+                }),
           ],
         ),
       ),

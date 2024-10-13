@@ -69,6 +69,20 @@ flutter:
     - assets/card.png
     - assets/eraser.png
     - assets/undo.png
+    - assets/swipe_images/image1.jpg
+    - assets/swipe_images/image2.jpg
+    - assets/swipe_images/image3.jpg
+    - assets/swipe_images/image4.jpg
+    - assets/swipe_images/image5.jpg
+    - assets/swipe_images/image6.jpg
+    - assets/swipe_images/image7.jpg
+    - assets/swipe_images/image8.jpg
+    - assets/swipe_images/image9.jpg
+    - assets/swipe_images/image10.jpg
+    - assets/swipe_images/down.png
+    - assets/swipe_images/up.png
+    - assets/swipe_images/left.png
+    - assets/swipe_images/right.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

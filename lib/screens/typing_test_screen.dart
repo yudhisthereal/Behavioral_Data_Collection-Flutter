@@ -1,4 +1,4 @@
-import 'package:behavioral_data_collection/screens/card_swipe_screen.dart';
+import 'package:behavioral_data_collection/screens/horizontal_swipe_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/chat_bubble.dart';
 import '../theme/colors.dart';
@@ -166,7 +166,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                "Great! Let's continue to the last game!",
+                "Great! Let's continue!",
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CardSwipeScreen(),
+                        builder: (context) => const HorizontalSwipeScreen(),
                       ),
                     );
                   },
