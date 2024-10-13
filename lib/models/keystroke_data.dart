@@ -1,62 +1,37 @@
-import 'package:flutter/foundation.dart';
-
-
 class KeystrokeData {
-  String key;
-  DateTime pressTime;
-  DateTime? releaseTime;
+  final String key;
+  final int flightTime;
 
-  KeystrokeData({required this.key, required this.pressTime});
+  KeystrokeData({required this.key, required this.flightTime});
 
-  Duration? get holdDuration {
-    if (releaseTime != null) {
-      return releaseTime!.difference(pressTime);
-    }
-    return null;
-  }
-
+  // Convert to a map format
   Map<String, dynamic> toMap() {
     return {
       'key': key,
-      'pressTime': pressTime.toIso8601String(),
-      'releaseTime': releaseTime?.toIso8601String(),
-      'holdDuration': holdDuration?.inMilliseconds,
+      'flightTime': flightTime,
     };
   }
 }
 
 class KeystrokeSession {
-  final List<KeystrokeData> _keystrokes = [];
-  DateTime? lastReleaseTime;
-  final Set<String> _activeKeys = {}; // Track active keys
+  final List<KeystrokeData> _keystrokeDataList = [];
 
-  void addKeyPress(String key) {
-    if (!_activeKeys.contains(key)) {
-      DateTime currentTime = DateTime.now();
-      _keystrokes.add(KeystrokeData(key: key, pressTime: currentTime));
-      _activeKeys.add(key); // Mark this key as active
-    }
-  }
-
-  void addKeyRelease(String key) {
-    DateTime currentTime = DateTime.now();
-    KeystrokeData? keystroke = _keystrokes.lastWhere(
-          (element) => element.key == key && element.releaseTime == null,
+  // Add flight time and key pressed
+  void addFlightTime(String key, int flightTime) {
+    KeystrokeData keystrokeData = KeystrokeData(
+      key: key,
+      flightTime: flightTime,
     );
-
-    keystroke.releaseTime = currentTime;
-    _activeKeys.remove(key); // Remove from active keys
-
-    if (lastReleaseTime != null) {
-      Duration flightDuration = currentTime.difference(lastReleaseTime!);
-      if (kDebugMode) {
-        print('Flight Duration: ${flightDuration.inMilliseconds} ms');
-      }
-    }
-    lastReleaseTime = currentTime;
+    _keystrokeDataList.add(keystrokeData);
   }
 
+  // Convert session data to a list of maps
   List<Map<String, dynamic>> toList() {
-    return _keystrokes.map((k) => k.toMap()).toList();
+    return _keystrokeDataList.map((keystroke) => keystroke.toMap()).toList();
+  }
+
+  // Clear the session data for the next phase
+  void clear() {
+    _keystrokeDataList.clear();
   }
 }

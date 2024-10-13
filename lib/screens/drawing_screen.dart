@@ -110,7 +110,7 @@ class DrawingScreenState extends State<DrawingScreen> {
                     text: "Continue",
                     onPressed: () {
                       if (!_isCanvasBlank) {
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                             MaterialPageRoute(builder: (context) => const TypingTestScreen()));
                       }
                     },

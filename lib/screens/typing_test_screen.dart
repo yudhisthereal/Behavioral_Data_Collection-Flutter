@@ -2,7 +2,6 @@ import 'package:behavioral_data_collection/models/keystroke_data.dart';
 import 'package:behavioral_data_collection/screens/horizontal_swipe_screen.dart';
 import 'package:behavioral_data_collection/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../services/data_storage.dart';
 import '../widgets/chat_bubble.dart';
 import '../theme/colors.dart';
@@ -19,24 +18,54 @@ class TypingTestScreenState extends State<TypingTestScreen> {
   final List<ChatBubble> _messages = [];
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
-  final KeystrokeSession _keystrokeSession = KeystrokeSession();
+  final KeystrokeSession _alphabeticalSession = KeystrokeSession();
+  final KeystrokeSession _numericalSession = KeystrokeSession();
+  final KeystrokeSession _mixedSession = KeystrokeSession();
   final DataStorage _dataStorage = DataStorage();
   int _currentStep = 0;
+  DateTime? _lastKeyTime;
 
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus(); // Ensure focus is requested
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sendChat("If you were creating a username for your game profile, what would it be?");
     });
+    _controller.addListener(_handleTextChange); // Listen for text changes
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    _dataStorage.saveKeystrokeData(_keystrokeSession.toList());
     super.dispose();
+  }
+
+  void _handleTextChange() {
+    if (_controller.text.isNotEmpty) {
+      DateTime now = DateTime.now();
+      String lastKeyPressed = _controller.text[_controller.text.length - 1]; // Get the last typed character
+
+      if (_lastKeyTime != null) {
+        // Calculate flight time
+        Duration flightTime = now.difference(_lastKeyTime!);
+        _addFlightTime(lastKeyPressed, flightTime.inMilliseconds);
+      }
+
+      _lastKeyTime = now; // Update the last keypress time
+    }
+  }
+
+  void _addFlightTime(String key, int flightTime) {
+    // Add flight time and key to the current session depending on the step
+    if (_currentStep == 1) {
+      _alphabeticalSession.addFlightTime(key, flightTime);
+    } else if (_currentStep == 2) {
+      _numericalSession.addFlightTime(key, flightTime);
+    } else if (_currentStep == 3) {
+      _mixedSession.addFlightTime(key, flightTime);
+    }
   }
 
   @override
@@ -50,30 +79,19 @@ class TypingTestScreenState extends State<TypingTestScreen> {
           child: Divider(color: AppColors.primary),
         ),
       ),
-      body: KeyboardListener(
-        focusNode: _focusNode,
-        autofocus: true, // Requests focus upon initialization
-        onKeyEvent: (event) {
-          if (event is KeyDownEvent) {
-            _keystrokeSession.addKeyPress(event.logicalKey.keyLabel);
-          } else if (event is KeyUpEvent) {
-            _keystrokeSession.addKeyRelease(event.logicalKey.keyLabel);
-          }
-        },
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  return _messages[index];
-                },
-              ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                return _messages[index];
+              },
             ),
-            _buildUserInput(),
-          ],
-        ),
+          ),
+          _buildUserInput(),
+        ],
       ),
     );
   }
@@ -101,6 +119,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
         _messages.add(ChatBubble(text: message, isUserMessage: true));
         _processUserInput(message);
         _controller.clear();
+        _lastKeyTime = null; // Reset keypress time after message is sent
       });
       _scrollToBottom();
     }
@@ -139,6 +158,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
         });
         break;
       case 2:
+        _dataStorage.saveNumericalKeystrokeData(_numericalSession.toList());
         _currentStep++;
         _sendChat("Please write the following sentence!");
         Future.delayed(const Duration(milliseconds: 500), () {
@@ -146,14 +166,16 @@ class TypingTestScreenState extends State<TypingTestScreen> {
         });
         break;
       case 3:
+        _dataStorage.saveAlphabeticalKeystrokeData(_alphabeticalSession.toList());
         _currentStep++;
         _sendChat("Please write the following sentence!");
         Future.delayed(const Duration(milliseconds: 500), () {
           _sendChat(
-              "Norway, known for its stunning fjords, has a coastline that stretches approximately 2,580 kilometers, with over 50,000 islands.");
+              "I love you 3000...");
         });
         break;
       case 4:
+        _dataStorage.saveMixedKeystrokeData(_mixedSession.toList());
         _showCompletionPopup();
         break;
     }
@@ -179,14 +201,14 @@ class TypingTestScreenState extends State<TypingTestScreen> {
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center, // Center-align the text
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20), // Add some space between text and button
+              const SizedBox(height: 20),
               Center(
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const HorizontalSwipeScreen(),

@@ -32,7 +32,7 @@ class EndScreen extends StatelessWidget {
                 bgColor: AppColors.red,
                 textColor: AppColors.onPrimary,
                 onPressed: () => {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const OnboardingScreen())
                   )

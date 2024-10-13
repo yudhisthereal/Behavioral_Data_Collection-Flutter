@@ -169,7 +169,7 @@ class VerticalSwipeScreenState extends State<VerticalSwipeScreen> {
           bgColor: AppColors.primary,
           textColor: AppColors.onPrimary,
           onPressed: () => {
-            Navigator.push(
+            Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const EndScreen())
             )
           }

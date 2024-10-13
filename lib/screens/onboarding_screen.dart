@@ -130,7 +130,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                 textColor: AppColors.onPrimary,
                 onPressed: () async {
                   DataStorage.userName = _controller.text;
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const DrawingScreen()),
                   );
