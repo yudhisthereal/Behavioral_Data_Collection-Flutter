@@ -3,6 +3,7 @@ import 'package:behavioral_data_collection/screens/horizontal_swipe_screen.dart'
 import 'package:behavioral_data_collection/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/data_storage.dart';
 import '../widgets/chat_bubble.dart';
 import '../theme/colors.dart';
 
@@ -19,6 +20,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   final KeystrokeSession _keystrokeSession = KeystrokeSession();
+  final DataStorage _dataStorage = DataStorage();
   int _currentStep = 0;
 
   @override
@@ -33,7 +35,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-
+    _dataStorage.saveKeystrokeData(_keystrokeSession.toList());
     super.dispose();
   }
 

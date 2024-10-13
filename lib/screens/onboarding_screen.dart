@@ -3,6 +3,7 @@ import 'package:behavioral_data_collection/widgets/custom_button.dart';
 import 'package:behavioral_data_collection/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../services/data_storage.dart';
 import '../theme/colors.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
+
     _requestStoragePermission();
 
     // Listen to changes in the text field
@@ -29,31 +31,53 @@ class OnboardingScreenState extends State<OnboardingScreen> {
     });
   }
 
+  Future<void> _requestStoragePermission() async {
+    await Permission.storage
+        .onDeniedCallback(() {
+          // Handle permission denied
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission denied.')),
+          );
+        })
+        .onGrantedCallback(() {
+          // Handle permission granted
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission granted!')),
+          );
+        })
+        .onPermanentlyDeniedCallback(() {
+          // Handle permanently denied
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission permanently denied. Please enable it in app settings.')),
+          );
+          openAppSettings(); // Open app settings if the permission is permanently denied
+        })
+        .onRestrictedCallback(() {
+          // Handle restricted permission
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is restricted.')),
+          );
+        })
+        .onLimitedCallback(() {
+          // Handle limited permission
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is limited.')),
+          );
+        })
+        .onProvisionalCallback(() {
+          // Handle provisional permission
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is provisional.')),
+          );
+        })
+    .request();
+  }
+
   @override
   void dispose() {
     // Dispose of the controller when no longer needed
     _controller.dispose();
     super.dispose();
-  }
-
-  Future<void> _requestStoragePermission() async {
-    // Store the current ScaffoldMessengerState
-    final messenger = ScaffoldMessenger.of(context);
-
-    PermissionStatus status = await Permission.manageExternalStorage.request();
-
-    if (status.isGranted) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Storage permission granted!')),
-      );
-      // Navigate to the next screen or perform any other action
-    } else if (status.isDenied) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Storage permission denied.')),
-      );
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings(); // Open app settings if the permission is permanently denied
-    }
   }
 
   @override
@@ -67,7 +91,6 @@ class OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Title Text
               const Text(
                 'Chat, Sketch, and Play with Abot!',
                 style: TextStyle(
@@ -78,8 +101,6 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16.0),
-
-              // Description Text
               const Text(
                 'Abot is a chatbot who will guide you through the session. Let\'s play with Abot!',
                 style: TextStyle(
@@ -89,8 +110,6 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32.0),
-
-              // Illustration Image
               Center(
                 child: Image.asset(
                   'assets/gambar_signature.png',
@@ -105,18 +124,18 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                 style: TextStyle(color: AppColors.primary),
               ),
               CustomTextField(controller: _controller, hintText: 'Enter your name'),
-              // Get Started Button
               CustomButton(
                 text: 'Get Started!',
                 bgColor: AppColors.primary,
                 textColor: AppColors.onPrimary,
                 onPressed: () async {
+                  DataStorage.userName = _controller.text;
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const DrawingScreen()),
                   );
                 },
-                isEnabled: isButtonEnabled, // Use the state variable
+                isEnabled: isButtonEnabled,
               ),
             ],
           ),
