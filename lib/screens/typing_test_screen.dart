@@ -1,5 +1,8 @@
+import 'package:behavioral_data_collection/models/keystroke_data.dart';
 import 'package:behavioral_data_collection/screens/horizontal_swipe_screen.dart';
+import 'package:behavioral_data_collection/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/chat_bubble.dart';
 import '../theme/colors.dart';
 
@@ -14,6 +17,8 @@ class TypingTestScreenState extends State<TypingTestScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<ChatBubble> _messages = [];
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
+  final KeystrokeSession _keystrokeSession = KeystrokeSession();
   int _currentStep = 0;
 
   @override
@@ -28,6 +33,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -42,19 +48,30 @@ class TypingTestScreenState extends State<TypingTestScreen> {
           child: Divider(color: AppColors.primary),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController, // Attach the ScrollController
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return _messages[index];
-              },
+      body: KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true, // Requests focus upon initialization
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent) {
+            _keystrokeSession.addKeyPress(event.logicalKey.keyLabel);
+          } else if (event is KeyUpEvent) {
+            _keystrokeSession.addKeyRelease(event.logicalKey.keyLabel);
+          }
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  return _messages[index];
+                },
+              ),
             ),
-          ),
-          _buildUserInput(),
-        ],
+            _buildUserInput(),
+          ],
+        ),
       ),
     );
   }
@@ -64,18 +81,7 @@ class TypingTestScreenState extends State<TypingTestScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Type a message',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: const BorderSide(color: Colors.black),
-                ),
-              ),
-            ),
-          ),
+          Expanded(child: CustomTextField(controller: _controller, hintText: 'Type a message')),
           IconButton(
             onPressed: () {
               _sendMessage(_controller.text);
