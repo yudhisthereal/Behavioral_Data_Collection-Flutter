@@ -102,6 +102,8 @@ class DrawingCanvasState extends State<DrawingCanvas> {
       strokeId: widget.handwritingSession.currentStrokeId,
       pressure: pressure,
       angle: angle,
+      speed: 0,
+      event: "down"
     );
   }
 
@@ -141,11 +143,17 @@ class DrawingCanvasState extends State<DrawingCanvas> {
       strokeId: widget.handwritingSession.currentStrokeId,
       pressure: pressure,
       angle: angle,
+      speed: speed,
+      event: "move"
     );
   }
 
   // Handle ending the stroke
   void _onPanEnd(DragEndDetails details) {
+    Offset currentPosition = details.localPosition;
+    double angle = _lastPoint != null
+        ? _calculateAngle(_lastPoint!.position, currentPosition)
+        : 0.0;
     if (_currentStroke != null) {
       setState(() {
         _strokes.add(_currentStroke!);
@@ -153,6 +161,7 @@ class DrawingCanvasState extends State<DrawingCanvas> {
         _addToHistory();
         widget.onCanvasChanged(_isCanvasBlank());
       });
+      widget.handwritingSession.endStroke(details.localPosition, 1.0, angle);
     }
   }
 

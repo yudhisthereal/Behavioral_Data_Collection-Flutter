@@ -7,6 +7,7 @@ class HandwritingData {
   int strokeId;
   double? angle;
   double? speed;
+  String event;
 
   HandwritingData({
     required this.position,
@@ -15,6 +16,7 @@ class HandwritingData {
     this.pressure,
     this.angle,
     this.speed,
+    required this.event,
   });
 
   double calculateSpeed(HandwritingData previousPoint) {
@@ -31,6 +33,7 @@ class HandwritingData {
       'strokeId': strokeId,
       'angle (degrees)': angle ?? 0.0,
       'speed (px/ms)': speed,
+      'event': event,
     };
   }
 }
@@ -48,6 +51,8 @@ class HandwritingSession {
       strokeId: ++_strokeIdCounter,
       pressure: pressure,
       angle: angle,
+      speed: speed,
+      event: "down",
     ));
   }
 
@@ -59,6 +64,19 @@ class HandwritingSession {
       pressure: pressure,
       angle: angle,
       speed: speed,
+      event: "move"
+    ));
+  }
+
+  void endStroke(Offset position, double? pressure, double? angle) {
+    _strokes.add(HandwritingData(
+      position: position,
+      timestamp: DateTime.now(),
+      strokeId: _strokeIdCounter,
+      pressure: pressure,
+      angle: angle,
+      speed: 0,
+      event: "up",
     ));
   }
 
