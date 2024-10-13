@@ -1,5 +1,7 @@
 import 'package:behavioral_data_collection/screens/typing_test_screen.dart';
+import 'package:behavioral_data_collection/services/data_storage.dart';
 import 'package:flutter/material.dart';
+import '../models/handwriting_data.dart';
 import '../widgets/drawing_canvas.dart';
 import '../widgets/custom_button.dart';
 import '../theme/colors.dart';
@@ -19,6 +21,9 @@ class DrawingScreenState extends State<DrawingScreen> {
 
   // Access to the canvas state
   final GlobalKey<DrawingCanvasState> _canvasKey = GlobalKey();
+
+  final HandwritingSession sharedHandwritingSession = HandwritingSession();
+  final DataStorage dataStorage = DataStorage();
 
   void _onCanvasChanged(bool isBlank) {
     setState(() {
@@ -60,6 +65,7 @@ class DrawingScreenState extends State<DrawingScreen> {
               isBrushSelected: _isBrushSelected,
               onCanvasChanged: _onCanvasChanged,
               isEraserSelected: !_isBrushSelected,
+              handwritingSession: sharedHandwritingSession
             ),
           ),
           SafeArea( // Wrap toolbar in SafeArea to avoid overlapping with system UI
@@ -110,6 +116,7 @@ class DrawingScreenState extends State<DrawingScreen> {
                     text: "Continue",
                     onPressed: () {
                       if (!_isCanvasBlank) {
+                        dataStorage.saveHandwritingData(sharedHandwritingSession.toList());
                         Navigator.of(context).pushReplacement(
                             MaterialPageRoute(builder: (context) => const TypingTestScreen()));
                       }
