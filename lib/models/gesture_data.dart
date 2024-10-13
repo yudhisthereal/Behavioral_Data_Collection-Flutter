@@ -8,7 +8,12 @@ class GestureData {
   DateTime? endTime;
   double? pressure;
 
-  GestureData({required this.startPosition, required this.endPosition, required this.startTime, this.pressure});
+  GestureData({
+    required this.startPosition,
+    required this.endPosition,
+    required this.startTime,
+    this.pressure,
+  });
 
   void endGesture(Offset endPosition, DateTime endTime) {
     this.endPosition = endPosition;
@@ -36,7 +41,21 @@ class GestureData {
   double get swipeAngle {
     double dx = endPosition.dx - startPosition.dx;
     double dy = endPosition.dy - startPosition.dy;
-    return atan2(dy, dx) * (180 / pi); // in degrees
+    double angle = atan2(dy, dx) * (180 / pi); // Convert to degrees
+    return (angle + 360) % 360; // Ensure 0-360 range
+  }
+
+  String get swipeDirection {
+    double angle = swipeAngle;
+    if (angle >= 45 && angle < 135) {
+      return 'down';
+    } else if (angle >= 135 && angle < 225) {
+      return 'left';
+    } else if (angle >= 225 && angle < 315) {
+      return 'up';
+    } else {
+      return 'right';
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -45,11 +64,12 @@ class GestureData {
       'startPositionY': startPosition.dy,
       'endPositionX': endPosition.dx,
       'endPositionY': endPosition.dy,
-      'swipeDuration': swipeDuration,
-      'swipeSpeed': swipeSpeed,
-      'swipeAngle': swipeAngle,
+      'duration (ms)': swipeDuration,
+      'speed (px/s)': swipeSpeed,
+      'angle (degrees)': swipeAngle,
+      'direction': swipeDirection, // Add direction to the map
       'pressure': pressure ?? 0.0,
-      'swipeDistance': swipeDistance
+      'distance (px)': swipeDistance,
     };
   }
 }
@@ -59,12 +79,12 @@ class GestureSession {
 
   void startGesture(Offset startPosition, double pressure) {
     _gestures.add(
-        GestureData(
-            startPosition: startPosition,
-            endPosition: startPosition, // only for initialization
-            startTime: DateTime.now(),
-            pressure: pressure
-        )
+      GestureData(
+        startPosition: startPosition,
+        endPosition: startPosition, // Only for initialization
+        startTime: DateTime.now(),
+        pressure: pressure,
+      ),
     );
   }
 

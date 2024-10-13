@@ -58,8 +58,16 @@ class DataStorage {
     }
   }
 
-  Future<void> saveGestureData(List<Map<String, dynamic>> gestureData) async {
-    String fileName = '$userName-gesture.csv';
+  Future<void> saveHorizontalGestureData(List<Map<String, dynamic>> gestureData) async {
+    String fileName = '$userName-h-gesture.csv';
+    String filePath = await saveToCSV(fileName, gestureData);
+    if (kDebugMode) {
+      print('Gesture data saved successfully at: $filePath');
+    }
+  }
+
+  Future<void> saveVerticalGestureData(List<Map<String, dynamic>> gestureData) async {
+    String fileName = '$userName-v-gesture.csv';
     String filePath = await saveToCSV(fileName, gestureData);
     if (kDebugMode) {
       print('Gesture data saved successfully at: $filePath');

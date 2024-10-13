@@ -1,4 +1,6 @@
+import 'package:behavioral_data_collection/models/gesture_data.dart';
 import 'package:behavioral_data_collection/screens/vertical_swipe_screen.dart';
+import 'package:behavioral_data_collection/services/data_storage.dart';
 import 'package:behavioral_data_collection/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
@@ -11,6 +13,8 @@ class HorizontalSwipeScreen extends StatefulWidget {
 }
 
 class HorizontalSwipeScreenState extends State<HorizontalSwipeScreen> {
+  final GestureSession gestureSession = GestureSession();
+  final DataStorage dataStorage = DataStorage();
   int _currentImageIndex = 0;
   static const int lastId = 6;
   final List<String> _imagePaths = [
@@ -72,28 +76,36 @@ class HorizontalSwipeScreenState extends State<HorizontalSwipeScreen> {
 
   Widget _buildHorizontalCarousel() {
     return Expanded(
-      child: PageView.builder(
-        scrollDirection: Axis.horizontal,
-        onPageChanged: (index) {
-          setState(() {
-            _currentImageIndex = index;
-            if (index != 0 && index != lastId) {
-              if (!_passed1State[index]) {
-                _passed1State[index] = true;
-              } else if (!_passed2State[index]) {
-                _passed2State[index] = true;
+      child: Listener(
+        onPointerDown: (event) {
+          gestureSession.startGesture(event.localPosition, 1.0);
+        },
+        onPointerUp: (event) {
+          gestureSession.endGesture(event.localPosition);
+        },
+        child: PageView.builder(
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (index) {
+            setState(() {
+              _currentImageIndex = index;
+              if (index != 0 && index != lastId) {
+                if (!_passed1State[index]) {
+                  _passed1State[index] = true;
+                } else if (!_passed2State[index]) {
+                  _passed2State[index] = true;
+                }
               }
+            });
+          },
+          itemCount: _imagePaths.length,
+          itemBuilder: (context, index) {
+            if (index == 0 || index == 6) {
+              return _buildSwipeInstructions(index);
+            } else {
+              return _buildZoomableImage(_imagePaths[index]);
             }
-          });
-        },
-        itemCount: _imagePaths.length,
-        itemBuilder: (context, index) {
-          if (index == 0 || index == 6) {
-            return _buildSwipeInstructions(index);
-          } else {
-            return _buildZoomableImage(_imagePaths[index]);
-          }
-        },
+          },
+        ),
       ),
     );
   }
@@ -140,16 +152,11 @@ class HorizontalSwipeScreenState extends State<HorizontalSwipeScreen> {
   }
 
   Widget _buildZoomableImage(String imagePath) {
-    return GestureDetector(
-      onScaleUpdate: (details) {
-        // Handle image zoom
-      },
-      child: Center(
+    return Center(
         child: Image.asset(
           imagePath,
           fit: BoxFit.fitHeight,
         ),
-      ),
     );
   }
 
@@ -167,6 +174,7 @@ class HorizontalSwipeScreenState extends State<HorizontalSwipeScreen> {
           bgColor: AppColors.primary,
           textColor: AppColors.onPrimary,
           onPressed: () => {
+            dataStorage.saveHorizontalGestureData(gestureSession.toList()),
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const VerticalSwipeScreen())
             )

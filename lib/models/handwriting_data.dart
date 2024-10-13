@@ -22,7 +22,7 @@ class HandwritingData {
   double calculateSpeed(HandwritingData previousPoint) {
     Duration timeDiff = timestamp.difference(previousPoint.timestamp);
     double distance = (position - previousPoint.position).distance;
-    return timeDiff.inMilliseconds > 0 ? distance / timeDiff.inMilliseconds : 0.0;
+    return timeDiff.inMilliseconds > 0 ? distance / (timeDiff.inMilliseconds / 1000) : 0.0;
   }
 
   Map<String, dynamic> toMap() {
@@ -32,7 +32,7 @@ class HandwritingData {
       'pressure': pressure ?? 0.0,
       'strokeId': strokeId,
       'angle (degrees)': angle ?? 0.0,
-      'speed (px/ms)': speed,
+      'speed (px/s)': speed, // pixels/second
       'event': event,
     };
   }
