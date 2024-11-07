@@ -18,7 +18,7 @@ class DrawingCanvas extends StatefulWidget {
     required this.isBrushSelected,
     required this.isEraserSelected,
     required this.onCanvasChanged,
-    required this.handwritingSession
+    required this.handwritingSession,
   });
 
   @override
@@ -67,25 +67,22 @@ class DrawingCanvasState extends State<DrawingCanvas> {
     }
   }
 
-  // Calculate the angle between two points
   double _calculateAngle(Offset from, Offset to) {
     double radians = atan2(to.dy - from.dy, to.dx - from.dx);
-    double degrees = radians * (180 / pi); // Convert radians to degrees
-    return (degrees + 360) % 360; // Ensure the result is between 0 and 360
+    double degrees = radians * (180 / pi);
+    return (degrees + 360) % 360;
   }
 
-  // Calculate the speed of movement based on position and time differences
   double _calculateSpeed(HandwritingData previousPoint, Offset currentPosition) {
     final duration = DateTime.now().difference(previousPoint.timestamp);
     final distance = (currentPosition - previousPoint.position).distance;
     return duration.inMilliseconds > 0 ? distance / duration.inMilliseconds : 0.0;
   }
 
-  // Handle starting a stroke
-  void _onPanStart(DragStartDetails details) {
-    Offset position = details.localPosition;
+  void _onPointerDown(PointerDownEvent event) {
+    Offset position = event.localPosition;
     DateTime timestamp = DateTime.now();
-    double pressure = 1.0;
+    double pressure = event.pressure;
     double angle = 0.0;
 
     setState(() {
@@ -107,10 +104,10 @@ class DrawingCanvasState extends State<DrawingCanvas> {
     );
   }
 
-  void _onPanUpdate(DragUpdateDetails details) {
-    Offset currentPosition = details.localPosition;
+  void _onPointerMove(PointerMoveEvent event) {
+    Offset currentPosition = event.localPosition;
     DateTime currentTimestamp = DateTime.now();
-    double pressure = 1.0;
+    double pressure = event.pressure;
     double angle = _lastPoint != null
         ? _calculateAngle(_lastPoint!.position, currentPosition)
         : 0.0;
@@ -139,10 +136,9 @@ class DrawingCanvasState extends State<DrawingCanvas> {
     );
   }
 
-
-  // Handle ending the stroke
-  void _onPanEnd(DragEndDetails details) {
-    Offset currentPosition = details.localPosition;
+  void _onPointerUp(PointerUpEvent event) {
+    Offset currentPosition = _lastPoint?.position ?? Offset.zero;
+    double pressure = _lastPoint?.pressure ?? 1.0;
     double angle = _lastPoint != null
         ? _calculateAngle(_lastPoint!.position, currentPosition)
         : 0.0;
@@ -153,23 +149,23 @@ class DrawingCanvasState extends State<DrawingCanvas> {
         _addToHistory();
         widget.onCanvasChanged(_isCanvasBlank());
       });
-      widget.handwritingSession.endStroke(details.localPosition, 1.0, angle);
+      widget.handwritingSession.endStroke(currentPosition, pressure, angle);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanStart: widget.isBrushSelected || widget.isEraserSelected ? _onPanStart : null,
-      onPanUpdate: widget.isBrushSelected || widget.isEraserSelected ? _onPanUpdate : null,
-      onPanEnd: widget.isBrushSelected || widget.isEraserSelected ? _onPanEnd : null,
+    return Listener(
+      onPointerDown: widget.isBrushSelected || widget.isEraserSelected ? _onPointerDown : null,
+      onPointerMove: widget.isBrushSelected || widget.isEraserSelected ? _onPointerMove : null,
+      onPointerUp: widget.isBrushSelected || widget.isEraserSelected ? _onPointerUp : null,
       child: CustomPaint(
         painter: _DrawingPainter(
           strokes: _strokes,
           currentStroke: _currentStroke,
           eraserRadius: _eraserRadius,
           brushRadius: _brushRadius,
-          brushSelected: widget.isBrushSelected
+          brushSelected: widget.isBrushSelected,
         ),
         child: const SizedBox.expand(),
       ),
@@ -229,4 +225,3 @@ class _DrawingPainter extends CustomPainter {
     return true;
   }
 }
-
