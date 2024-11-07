@@ -77,7 +77,7 @@ class VerticalSwipeScreenState extends State<VerticalSwipeScreen> {
     return Expanded(
       child: Listener(
         onPointerDown: (event) {
-          gestureSession.startGesture(event.localPosition, 1.0);
+          gestureSession.startGesture(event.localPosition, event.pressure);
         },
         onPointerUp: (event) {
           gestureSession.endGesture(event.localPosition);
